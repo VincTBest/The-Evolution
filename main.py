@@ -4,6 +4,8 @@ import random
 from player import Player
 from camera import Camera
 
+scene = "menu"
+
 # Initialize pygame
 pygame.init()
 
@@ -50,27 +52,31 @@ clock = pygame.time.Clock()
 running = True
 
 while running:
-    screen.fill((10, 11, 45))  # Clear screen
+    if scene == "playArea":
+        screen.fill((10, 11, 45))  # Clear screen
 
-    # Spawn food randomly
-    if random.random() < 0.08:  # Adjust the spawn rate here (8% chance each frame)
-        spawnFood()
+        # Spawn food randomly
+        if random.random() < 0.08:  # Adjust the spawn rate here (8% chance each frame)
+            spawnFood()
 
-    # Check for food collision
-    checkFoodCollision()
+        # Check for food collision
+        checkFoodCollision()
 
-    # Draw all food items (apply camera transformation)
-    for food_rect in foods:
-        transformed_food_rect = camera.apply_rect(food_rect)  # Adjust food position
-        screen.blit(food_image, transformed_food_rect)
+        # Draw all food items (apply camera transformation)
+        for food_rect in foods:
+            transformed_food_rect = camera.apply_rect(food_rect)  # Adjust food position
+            screen.blit(food_image, transformed_food_rect)
 
-    # Update player
-    keys = pygame.key.get_pressed()
-    mouse_pos = pygame.mouse.get_pos()
-    player.update(keys, mouse_pos)
+        # Update player
+        keys = pygame.key.get_pressed()
+        mouse_pos = pygame.mouse.get_pos()
+        player.update(keys, mouse_pos)
 
-    # Draw player (apply camera transformation)
-    screen.blit(player.image, camera.apply(player))
+        # Draw player (apply camera transformation)
+        screen.blit(player.image, camera.apply(player))
+    elif scene == "menu":
+        screen.fill((10, 11, 45))
+        pass
 
     # Event handling
     for event in pygame.event.get():
