@@ -2,6 +2,7 @@ import pygame
 import assets
 import random
 from player import Player
+from camera import Camera
 
 # Initialize pygame
 pygame.init()
@@ -9,21 +10,28 @@ pygame.init()
 # Screen settings (convert to integers)
 WIDTH, HEIGHT = int(1920 / 5 * 4), int(1080 / 5 * 4)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Evolution - Player Controller")
+pygame.display.set_caption("The Evolution")
+
+# Create camera
+camera = Camera(WIDTH, HEIGHT)
 
 # Create player at the center of the screen
-player = Player(WIDTH // 2, HEIGHT // 2)
+player = Player(WIDTH, HEIGHT)
 
 # Load an image for the food item
 food_image = assets.loadImage(assets.assets["Food"])
+
+# Set the world size (for the camera's bounds)
+world_width, world_height = int(WIDTH * 2), int(HEIGHT * 2)
+camera.set_world_size(world_width, world_height)
 
 # List to hold food objects
 foods = []
 
 # Create food object at a random location within the world bounds
 def spawnFood():
-    x = random.randint(0, WIDTH - 50)  # Food size subtracted to prevent overflow
-    y = random.randint(0, HEIGHT - 50)
+    x = random.randint(0, world_width - 50)  # Food size subtracted to prevent overflow
+    y = random.randint(0, world_height - 50)
     food_rect = pygame.Rect(x, y, 50, 50)  # Food size
     foods.append(food_rect)
 
@@ -44,9 +52,6 @@ running = True
 while running:
     screen.fill((10, 11, 45))  # Clear screen
 
-    # Center the player on the screen
-    player.center(WIDTH, HEIGHT)
-
     # Spawn food randomly
     if random.random() < 0.08:  # Adjust the spawn rate here (8% chance each frame)
         spawnFood()
@@ -54,15 +59,18 @@ while running:
     # Check for food collision
     checkFoodCollision()
 
-    # Draw all food items
+    # Draw all food items (apply camera transformation)
     for food_rect in foods:
-        screen.blit(food_image, food_rect)
+        transformed_food_rect = camera.apply_rect(food_rect)  # Adjust food position
+        screen.blit(food_image, transformed_food_rect)
 
     # Update player
     keys = pygame.key.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
     player.update(keys, mouse_pos)
-    player.draw(screen)
+
+    # Draw player (apply camera transformation)
+    screen.blit(player.image, camera.apply(player))
 
     # Event handling
     for event in pygame.event.get():

@@ -2,54 +2,54 @@ import pygame
 import math
 import assets
 
-
 class Player:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, screen_width, screen_height):
+        # Dynamically set player's position to be the center of the window
+        self.x = screen_width // 2
+        self.y = screen_height // 2
         self.speed = 3
-        self.angle = 0
+        self.angle = 0  # Rotation angle
 
-        # Load player image (scaled)
-        self.image = assets.loadImage(assets.assets["SingleCellOrganism"])
+        # Load and store the original player image
+        self.original_image = assets.loadImage(assets.assets["SingleCellOrganism"])
+        self.image = self.original_image  # Image used for drawing
 
-        # Create rect for positioning and collision
+        # Create a rect and center it
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
     def update(self, keys, mouse_pos):
+        sprint = 1
+        if pygame.key.get_mods() & pygame.KMOD_SHIFT == 1:
+            sprint = 1.33
+
+
         # Calculate angle towards the mouse
-        dx = mouse_pos[0] - self.x
-        dy = mouse_pos[1] - self.y
-        target_angle = math.degrees(math.atan2(-dy, dx))  # Negative dy for correct angle
+        dx = mouse_pos[0] - self.rect.centerx
+        dy = mouse_pos[1] - self.rect.centery
+        self.angle = math.degrees(math.atan2(dy, dx))
 
-        # Rotate with A/D or auto-face mouse
-        if keys[pygame.K_a]:
-            self.angle += 3
-        elif keys[pygame.K_d]:
-            self.angle -= 3
-        else:
-            self.angle = target_angle
-
-        # Convert angle to radians
+        # Convert angle to radians for movement calculations
         rad = math.radians(self.angle)
 
-        # Move forward/backward
+        # Move forward/backward based on rotation
         if keys[pygame.K_w]:
-            self.x += math.cos(rad) * self.speed
-            self.y -= math.sin(rad) * self.speed
-        if keys[pygame.K_s]:
-            self.x -= math.cos(rad) * self.speed
-            self.y += math.sin(rad) * self.speed
+            self.x += math.cos(rad) * self.speed*sprint
+            self.y += math.sin(rad) * self.speed*sprint
 
-        # Update rect position based on the new x and y
+        if keys[pygame.K_s]:
+            self.x -= math.cos(rad) * self.speed*sprint
+            self.y -= math.sin(rad) * self.speed*sprint
+
+        # Update rect position
         self.rect.center = (self.x, self.y)
 
-    def draw(self, screen):
-        # Rotate and draw the player
-        rotated_img = pygame.transform.rotate(self.image, self.angle)
-        rect = rotated_img.get_rect(center=(self.rect.centerx, self.rect.centery))
-        screen.blit(rotated_img, rect.topleft)
+        # Rotate the image correctly
+        self.image = pygame.transform.rotate(self.original_image, -self.angle)
 
-    def center(self, width, height):
-        """Centers the player within the screen."""
-        self.rect.center = (width // 2, height // 2)
+        # Keep rect centered after rotation
+        self.rect = self.image.get_rect(center=self.rect.center)
+
+    def draw(self, screen, camera):
+        """Draws the rotated player at the correct camera position."""
+        transformed_rect = camera.apply(self)  # Get camera-adjusted position
+        screen.blit(self.image, transformed_rect.topleft)
