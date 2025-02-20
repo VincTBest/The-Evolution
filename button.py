@@ -35,7 +35,6 @@ class Button:
         textRect.center = (self.x, self.y)
         screen.blit(textSurface, textRect)
 
-
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             self.clicked = False

@@ -24,7 +24,7 @@ class Debugger:  # only for cheaters and devs
             player.addFood(10)
             time.sleep(0.1)
         if K_SHIFT_F12 and keys[pygame.K_o]:
-            player.addFood(50)
+            player.addFood(500)
             time.sleep(0.1)
         if K_SHIFT_F12 and keys[pygame.K_p]:
             player.addFood(creatures.creatures[player.get("creature")]["foodToUpgrade"])

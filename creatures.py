@@ -5,6 +5,7 @@ creatures = {
         "name": "Single Cell",
         "type": "Organism",
         "maxhp": 35,
+        "speed": 3,
         "attack": 1,
         "foodToUpgrade": 15,
         "stageToEvolve": 15,
@@ -15,6 +16,7 @@ creatures = {
         "name": "Multi Cell",
         "type": "Organism",
         "maxhp": 45,
+        "speed": 3.5,
         "attack": 5,
         "foodToUpgrade": 20,
         "stageToEvolve": 15,
@@ -25,6 +27,7 @@ creatures = {
         "name": "Prokaryotes",
         "type": "Bacteria",
         "maxhp": 50,
+        "speed": 4.5,
         "attack": 10,
         "foodToUpgrade": 20,
         "stageToEvolve": 15,
@@ -33,14 +36,9 @@ creatures = {
 }
 
 tiers = {
-    "1": {
-        "singleCell",
-        "multiCell",
-        "bacteriaProkaryotes"
-    },
-    "2": {
-
-    }
+    1: "singleCell",
+    2: "multiCell",
+    3: "bacteriaProkaryotes"
 }
 
 

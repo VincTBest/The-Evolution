@@ -17,7 +17,6 @@ class Player:
         self.screen_height = screen_height
         self.x = screen_width // 2
         self.y = screen_height // 2
-        self.speed = 3
         self.angle = 0  # Rotation angle
         self.walls = walls  # List of wall objects
 
@@ -31,12 +30,17 @@ class Player:
 
         # properties
 
-        self.food = 14
-        self.upgradeStageNeed = creatures.getCreatures()[self.name]["foodToUpgrade"]
-        self.upgradeEvolNeed = creatures.getCreatures()[self.name]["stageToEvolve"]
+        self.food = 5
         self.stage = 1
         self.stEvolution = 1
+        self.stEvolution2 = 1
         self.evolution = 1
+
+        # change-data properties
+
+        self.speed = creatures.getCreatures()[self.name]["speed"]
+        self.upgradeStageNeed = creatures.getCreatures()[self.name]["foodToUpgrade"]
+        self.upgradeEvolNeed = creatures.getCreatures()[self.name]["stageToEvolve"]
         self.creature = creatures.getCreatures()[self.name]["id"]
         self.creatureType = creatures.getCreatures()[self.name]["type"]
 
@@ -98,6 +102,11 @@ class Player:
             self.stage -= self.upgradeEvolNeed
             self.evolution += 1
 
+        if self.evolution != self.stEvolution2:
+            self.stEvolution2 = self.evolution
+            self.setName(creatures.tiers[self.evolution])
+            self.changeData()
+
     def draw(self, screen):
         self.drawFrame += 1
 
@@ -144,6 +153,10 @@ class Player:
         self.upgradeStageNeed = creatures.getCreatures()[self.name]["foodToUpgrade"]
         self.upgradeEvolNeed = creatures.getCreatures()[self.name]["stageToEvolve"]
         self.creatureType = creatures.getCreatures()[self.name]["type"]
+        self.speed = creatures.getCreatures()[self.name]["speed"]
+
+        # image stuff
+
         self.original_image = assets.loadImage(assets.assets[creatures.getCreatures()[self.name]["imageName"]])
         self.image = self.original_image  # Image used for drawing
 
