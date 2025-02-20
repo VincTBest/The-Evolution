@@ -15,8 +15,9 @@ except ImportError as e:
 
 scene = "menu"
 
-# Initialize pygame
+# init
 pygame.init()
+pygame.font.init()
 
 # Screen settings (convert to integers)
 WIDTH, HEIGHT = int(1920 / 5 * 4), int(1080 / 5 * 4)
@@ -60,17 +61,20 @@ spawnFood()
 clock = pygame.time.Clock()
 running = True
 
-play_button = button.Button(10, 10)
-options_button = button.Button(10, 10)
-quit_button = button.Button(10, 10)
-buttons = [play_button, options_button, quit_button]
+btn_n_l = assets.loadImage(assets.assets["btn_n"])
+btn_h_l = assets.loadImage(assets.assets["btn_h"])
+btn_a_l = assets.loadImage(assets.assets["btn_a"])
+
+play_button = button.Button(WIDTH/2, HEIGHT/2-80, btn_n_l, btn_h_l, btn_a_l, lambda: print("play"), "Play")
+options_button = button.Button(WIDTH/2, HEIGHT/2, btn_n_l, btn_h_l, btn_a_l, lambda: print("options"), "Options", assets.assets["autowide"])
+quit_button = button.Button(WIDTH/2, HEIGHT/2+80, btn_n_l, btn_h_l, btn_a_l, lambda: quit(), "Quit")
 
 while running:
     if scene == "playArea":
         screen.fill((10, 11, 45))  # Clear screen
 
         # Spawn food randomly
-        if random.random() < 0.08:  # Adjust the spawn rate here (8% chance each frame)
+        if random.random() < 0.08:
             spawnFood()
 
         # Check for food collision
@@ -90,6 +94,10 @@ while running:
         screen.blit(player.image, camera.apply(player))
     elif scene == "menu":
         screen.fill((10, 11, 45))
+
+        play_button.draw(screen)
+        options_button.draw(screen)
+        quit_button.draw(screen)
 
         pass
 

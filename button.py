@@ -1,15 +1,18 @@
 import pygame
 
 class Button:
-    def __init__(self, x, y, n, h, a, command):
+    def __init__(self, x, y, n, h, a, command, text, font, fontsize, textcolor):
         self.x = x
         self.y = y
         self.n = n  # normal image
         self.h = h  # hover image
         self.a = a  # active image
         self.command = command
-        self.rect = self.n.get_rect(topleft=(x, y))
+        self.rect = self.n.get_rect(center=(x, y))
         self.clicked = False
+        self.text = text
+        self.font = pygame.font.Font(font, fontsize)
+        self.textcolor = textcolor
 
     def draw(self, screen):
         mouse_pos = pygame.mouse.get_pos()
@@ -26,6 +29,12 @@ class Button:
                 self.clicked = False  # reset click state
         else:
             screen.blit(self.n, self.rect)  # normal image
+
+        textSurface = self.font.render(self.text, True, self.textcolor)
+        textRect = textSurface.get_rect()
+        textRect.center = (self.x, self.y)
+        screen.blit(textSurface, textRect)
+
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:

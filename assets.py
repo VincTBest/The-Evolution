@@ -34,11 +34,15 @@ def loadAssets():
         "MultiCellOrganism": j(basePath, "creatures", "multiCell.png"),
         "ProkaryotesBacteria": j(basePath, "creatures", "bacteriaProkaryotes.png"),
         "Food": j(basePath, "items", "food.png"),
+        "btn_n": j(basePath, "ui", "button.png"),
+        "btn_h": j(basePath, "ui", "button_hover.png"),
+        "btn_a": j(basePath, "ui", "button_active.png"),
+        "autowide": j(basePath, "font", "autowide", "Autowide-Regular.ttf")
     }
 
 
 def loadImage(image_path):
-    """Loads an image, scales it down by 25%, and returns a pygame.Surface."""
+    """Loads an image, scales it down by 10%, and returns a pygame.Surface."""
     try:
         image = pygame.image.load(image_path).convert_alpha()
         scaleAmount = 10
