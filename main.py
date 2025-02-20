@@ -51,6 +51,11 @@ spawnFood()
 clock = pygame.time.Clock()
 running = True
 
+play_button =
+options_button =
+quit_button =
+buttons = [play_button, options_button, quit_button]
+
 while running:
     if scene == "playArea":
         screen.fill((10, 11, 45))  # Clear screen
@@ -76,6 +81,7 @@ while running:
         screen.blit(player.image, camera.apply(player))
     elif scene == "menu":
         screen.fill((10, 11, 45))
+
         pass
 
     # Event handling
