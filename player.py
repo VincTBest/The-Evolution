@@ -70,7 +70,7 @@ class Player:
         # Predict next position
         next_x, next_y = self.x, self.y
 
-        if (abs(mouse_pos[0] - self.x) > 4) or (abs(mouse_pos[1] - self.y) > 4):
+        if (abs(mouse_pos[0] - self.x) > 6) or (abs(mouse_pos[1] - self.y) > 6):
             if keys[pygame.K_w]:  # Forward movement
                 new_x = self.x + math.cos(rad) * self.speed * sprint
                 new_y = self.y + math.sin(rad) * self.speed * sprint
