@@ -4,6 +4,7 @@ try:
     import button
     import assets
     import random
+    import hud
     from player import Player
     from camera import Camera
 except ImportError as e:
@@ -27,8 +28,13 @@ pygame.display.set_caption("The Evolution")
 # Create camera
 camera = Camera(WIDTH, HEIGHT)
 
+walls = []
+
 # Create player at the center of the screen
-player = Player(WIDTH, HEIGHT)
+player = Player(WIDTH, HEIGHT, walls)
+
+# Create HUD
+hud = hud.HUD()
 
 # Load an image for the food item
 food_image = assets.loadImage(assets.assets["Food"])
@@ -53,7 +59,14 @@ def checkFoodCollision():
     for food_rect in foods[:]:
         if player.rect.colliderect(food_rect):  # If player collides with food
             foods.remove(food_rect)  # Remove the food from the list
+            player.addFood(1)
             break  # Only remove one food at a time
+
+
+def setScene(sceneName):
+    global scene
+    scene = sceneName
+
 
 # Spawn initial food
 spawnFood()
@@ -65,12 +78,17 @@ btn_n_l = assets.loadImage(assets.assets["btn_n"])
 btn_h_l = assets.loadImage(assets.assets["btn_h"])
 btn_a_l = assets.loadImage(assets.assets["btn_a"])
 
-play_button = button.Button(WIDTH/2, HEIGHT/2-80, btn_n_l, btn_h_l, btn_a_l, lambda: print("play"), "Play")
-options_button = button.Button(WIDTH/2, HEIGHT/2, btn_n_l, btn_h_l, btn_a_l, lambda: print("options"), "Options", assets.assets["autowide"])
-quit_button = button.Button(WIDTH/2, HEIGHT/2+80, btn_n_l, btn_h_l, btn_a_l, lambda: quit(), "Quit")
+play_button = button.Button(WIDTH/2, HEIGHT/2-80, btn_n_l, btn_h_l, btn_a_l, lambda: setScene("playArea"), "Play", assets.assets["audiowide"], 26, (214, 214, 235))
+options_button = button.Button(WIDTH/2, HEIGHT/2, btn_n_l, btn_h_l, btn_a_l, lambda: setScene("opt"), "Options", assets.assets["audiowide"], 26, (214, 214, 235))
+quit_button = button.Button(WIDTH/2, HEIGHT/2+80, btn_n_l, btn_h_l, btn_a_l, lambda: quit(), "Quit", assets.assets["audiowide"], 26, (214, 214, 235))
+
+menu_button = button.Button(WIDTH/2, 40, btn_n_l, btn_h_l, btn_a_l, lambda: setScene("menu"), "Main Menu", assets.assets["audiowide"], 26, (214, 214, 235))
 
 while running:
     if scene == "playArea":
+
+        hud.update(player.get("food"), player.get("stage"), player.get("evolution"), player.get("creature"), player.get("creatureType"), player.get("canUpgrade"))
+
         screen.fill((10, 11, 45))  # Clear screen
 
         # Spawn food randomly
@@ -99,7 +117,14 @@ while running:
         options_button.draw(screen)
         quit_button.draw(screen)
 
-        pass
+    else:
+        screen.fill((0, 0, 0))
+        font01 = pygame.font.Font(assets.assets["audiowide"], 26)
+        textSurface = font01.render(f"No scene named \"{scene}\"", True, (255, 255, 255))
+        textRect = textSurface.get_rect()
+        textRect.center = (WIDTH/2, HEIGHT/2)
+        menu_button.draw(screen)
+        screen.blit(textSurface, textRect)
 
     # Event handling
     for event in pygame.event.get():
