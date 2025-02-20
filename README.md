@@ -1,4 +1,4 @@
 # The Evolution
 - Soon to be best game ever
-- Evolition simulator like Spore
+- Evolution simulator like Spore
 - Coming in 2030
