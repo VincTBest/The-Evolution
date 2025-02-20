@@ -41,7 +41,11 @@ def loadAssets():
         "hud_topleft": j(basePath, "ui", "hud_topleft.png"),
         "upg_n": j(basePath, "ui", "upgrade.png"),
         "upg_h": j(basePath, "ui", "upgrade_hover.png"),
-        "upg_a": j(basePath, "ui", "upgrade_active.png")
+        "upg_a": j(basePath, "ui", "upgrade_active.png"),
+        "ps5_diagram": j(basePath, "ui", "keys", "PS5", "PS5_Diagram.png"),
+        "ps4_diagram": j(basePath, "ui", "keys", "Others", "PS4", "PS4_Diagram.png"),
+        "x_diagram": j(basePath, "ui", "keys", "Xbox Series", "XboxSeriesX_Diagram.png"),
+        "al_diagram": j(basePath, "ui", "keys", "Others", "Amazon Luna", "Luna_Diagram.png")
     }
 
 

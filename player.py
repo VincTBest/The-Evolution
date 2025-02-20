@@ -62,12 +62,18 @@ class Player:
         next_rect.center = (next_x, next_y)
         return any(next_rect.colliderect(wall) for wall in self.walls)
 
-    def update(self, keys, mouse_pos):
+    def update(self, keys, mouse_pos, joystick):
 
-        l_x = self.joystick.get_axis(0)
-        l_y = self.joystick.get_axis(1)
-        r_x = self.joystick.get_axis(2)
-        r_y = self.joystick.get_axis(3)
+        l_x = 0
+        l_y = 0
+        r_x = 0
+        r_y = 0
+
+        if joystick is not None:
+            l_x = self.joystick.get_axis(0)
+            l_y = self.joystick.get_axis(1)
+            r_x = self.joystick.get_axis(2)
+            r_y = self.joystick.get_axis(3)
 
         if not self.isDead:
             self.liveFrame += 1

@@ -38,3 +38,16 @@ class Button:
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             self.clicked = False
+
+
+class QImg:
+    def __init__(self, x, y, img, w, h):
+        self.x = x
+        self.y = y
+        self.img = pygame.transform.scale(img, (w, h))
+
+    def draw(self, screen):
+
+        imgRect = self.img.get_rect()
+        imgRect.center = (self.x, self.y)
+        screen.blit(self.img, imgRect)

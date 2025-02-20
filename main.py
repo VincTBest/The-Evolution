@@ -6,6 +6,7 @@ try:
     import random
     import hud
     import debug
+    import controller
     from player import Player
     from camera import Camera
 except ImportError as e:
@@ -25,8 +26,10 @@ pygame.joystick.init()
 if pygame.joystick.get_count() > 0:
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
+    joystickType = controller.get_controller_type()
 else:
     joystick = None
+    joystickType = None
 
 screenSizeTest = False
 
@@ -83,6 +86,8 @@ def checkFoodCollision():
         if player.rect.colliderect(food_rect):  # If player collides with food
             foods.remove(food_rect)  # Remove the food from the list
             player.addFood(1)
+            if joystick is not None:
+                joystick.rumble(4, 7, 200)
             break  # Only remove one food at a time
 
 
@@ -107,7 +112,26 @@ quit_button = button.Button(WIDTH/2, HEIGHT/2+80, btn_n_l, btn_h_l, btn_a_l, lam
 
 menu_button = button.Button(WIDTH/2, 40, btn_n_l, btn_h_l, btn_a_l, lambda: setScene("menu"), "Main Menu", assets.assets["audiowide"], 26, (214, 214, 235))
 
+# controller diagrams
+
+dag_scd = 5
+dag_y = 110
+
+ps5_diagram = button.QImg(WIDTH/2, dag_y, assets.loadImage(assets.assets["ps5_diagram"]), 1452/dag_scd, 940/dag_scd)
+ps4_diagram = button.QImg(WIDTH/2, dag_y, assets.loadImage(assets.assets["ps4_diagram"]), 1452/dag_scd, 940/dag_scd)
+x_diagram = button.QImg(WIDTH/2, dag_y, assets.loadImage(assets.assets["x_diagram"]), 1452/dag_scd, 940/dag_scd)
+al_diagram = button.QImg(WIDTH/2, dag_y, assets.loadImage(assets.assets["al_diagram"]), 1452/dag_scd, 940/dag_scd)
+
 while running:
+
+    if pygame.joystick.get_count() > 0:
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+        joystickType = controller.get_controller_type()
+    else:
+        joystick = None
+        joystickType = None
+
     keys = pygame.key.get_pressed()
     debug.update(player, keys)
     if scene == "playArea":
@@ -131,7 +155,7 @@ while running:
         # Update player
 
         mouse_pos = pygame.mouse.get_pos()
-        player.update(keys, mouse_pos)
+        player.update(keys, mouse_pos, joystick)
 
         # Draw player (apply camera transformation)
         screen.blit(player.image, camera.apply(player))
@@ -147,6 +171,17 @@ while running:
         play_button.draw(screen)
         options_button.draw(screen)
         quit_button.draw(screen)
+
+        if joystickType is not None and joystickType != "unk":
+            if joystickType == "ps5":
+                ps5_diagram.draw(screen)
+            elif joystickType == "ps4":
+                ps4_diagram.draw(screen)
+            elif joystickType == "x":
+                x_diagram.draw(screen)
+            elif joystickType == "al":
+                al_diagram.draw(screen)
+
     elif scene == "playerDead":
         screen.fill((10, 11, 45))
         font01 = pygame.font.Font(assets.assets["audiowide"], 28)
