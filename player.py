@@ -4,13 +4,21 @@ import assets
 import creatures
 
 class Player:
-    def __init__(self, screen_width, screen_height, walls):
+    def __init__(self, screen_width, screen_height, walls, targetFps, joystick, mouse_pos):
 
+        self.joystick = joystick
+        self.controller = False
+
+        self.liveSecs = 0
+        self.liveFrame = 0
+        self.isDead = False
+        self.targetFps = targetFps
+        self.frame = 0
         self.temp1 = False
-
         self.drawFrame = 0
-
         self.name = "singleCell"
+
+        self.prev_mouse_pos = mouse_pos
 
         # Dynamically set player's position to be the center of the window
         self.screen_width = screen_width
@@ -55,31 +63,64 @@ class Player:
         return any(next_rect.colliderect(wall) for wall in self.walls)
 
     def update(self, keys, mouse_pos):
+
+        l_x = self.joystick.get_axis(0)
+        l_y = self.joystick.get_axis(1)
+        r_x = self.joystick.get_axis(2)
+        r_y = self.joystick.get_axis(3)
+
+        if not self.isDead:
+            self.liveFrame += 1
+            self.liveSecs = self.liveFrame/60
+
+        self.frame += 1
+
+        if self.frame >= self.targetFps*8:
+            self.frame = 0
+            self.food -= 1
+
+        if self.food < 0:
+            self.speed = 0
+            self.die()
+            self.food = 5
+            self.setName("singleCell")
+            self.changeData()
+
         sprint = 1
         if pygame.key.get_mods() & pygame.KMOD_SHIFT:
             sprint = 1.33
 
-        # Calculate angle towards the mouse
-        dx = mouse_pos[0] - self.rect.centerx
-        dy = mouse_pos[1] - self.rect.centery
-        self.angle = math.degrees(math.atan2(dy, dx))
-
-        # Convert angle to radians for movement calculations
-        rad = math.radians(self.angle)
-
-        # Predict next position
         next_x, next_y = self.x, self.y
 
-        if (abs(mouse_pos[0] - self.x) > 6) or (abs(mouse_pos[1] - self.y) > 6):
-            if keys[pygame.K_w]:  # Forward movement
+        if not self.controller:
+
+            # Calculate angle towards the mouse
+            dx = mouse_pos[0] - self.rect.centerx
+            dy = mouse_pos[1] - self.rect.centery
+            self.angle = math.degrees(math.atan2(dy, dx))
+
+            # Convert angle to radians for movement calculations
+            rad = math.radians(self.angle)
+
+            if (abs(mouse_pos[0] - self.x) > 6) or (abs(mouse_pos[1] - self.y) > 6):
+                if keys[pygame.K_w]:  # Forward movement
+                    new_x = self.x + math.cos(rad) * self.speed * sprint
+                    new_y = self.y + math.sin(rad) * self.speed * sprint
+                    if not self.check_collision(new_x, new_y):
+                        next_x, next_y = new_x, new_y
+
+                if keys[pygame.K_s]:  # Backward movement
+                    new_x = self.x - math.cos(rad) * self.speed * sprint
+                    new_y = self.y - math.sin(rad) * self.speed * sprint
+                    if not self.check_collision(new_x, new_y):
+                        next_x, next_y = new_x, new_y
+        else:
+            if abs(r_x) > 0.25 or abs(r_y) > 0.25:  # Prevent drift
+                self.angle = math.degrees(math.atan2(r_y, r_x))  # Rotate towards right stick direction
+                rad = math.radians(self.angle)  # Update movement angle
+
                 new_x = self.x + math.cos(rad) * self.speed * sprint
                 new_y = self.y + math.sin(rad) * self.speed * sprint
-                if not self.check_collision(new_x, new_y):
-                    next_x, next_y = new_x, new_y
-
-            if keys[pygame.K_s]:  # Backward movement
-                new_x = self.x - math.cos(rad) * self.speed * sprint
-                new_y = self.y - math.sin(rad) * self.speed * sprint
                 if not self.check_collision(new_x, new_y):
                     next_x, next_y = new_x, new_y
 
@@ -107,11 +148,22 @@ class Player:
             self.setName(creatures.tiers[self.evolution])
             self.changeData()
 
+        if any([keys[key] for key in
+                [pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d, pygame.K_SPACE, pygame.K_LSHIFT]]) or \
+                pygame.mouse.get_pressed()[0] or pygame.mouse.get_pressed()[1] or mouse_pos != self.prev_mouse_pos:
+            self.controller = False
+
+        elif any([self.joystick.get_button(i) for i in range(self.joystick.get_numbuttons())]) or abs(
+                l_x) > 0.25 or abs(l_y) > 0.25 or abs(r_x) > 0.25 or abs(r_y) > 0.25:
+            self.controller = True
+
+        self.prev_mouse_pos = mouse_pos
+
     def draw(self, screen):
         self.drawFrame += 1
 
         if self.evolution != self.stEvolution:  # DO NOT TOUCH
-            if self.drawFrame <= 180:
+            if self.drawFrame <= self.targetFps*3:
                 textSurface = self.font.render("You Evolved!", True, self.textcolor)
                 textRect = textSurface.get_rect()
                 textRect.center = (self.screen_width / 2, 40)
@@ -163,3 +215,12 @@ class Player:
     def upgrade(self):
         self.food -= self.upgradeStageNeed
         self.stage += 1
+
+    def die(self):
+        self.isDead = True
+
+    def dead(self):
+        return self.isDead
+
+    def getLive(self):
+        return self.liveSecs, self.liveFrame

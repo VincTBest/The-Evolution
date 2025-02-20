@@ -14,12 +14,19 @@ except ImportError as e:
     req.install_packages()
     quit()
 
-
+targetFps = 60
 scene = "menu"
 
 # init
 pygame.init()
 pygame.font.init()
+pygame.joystick.init()
+
+if pygame.joystick.get_count() > 0:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
+else:
+    joystick = None
 
 screenSizeTest = False
 
@@ -37,8 +44,10 @@ camera = Camera(WIDTH, HEIGHT)
 
 walls = []
 
+mouse_pos = pygame.mouse.get_pos()
+
 # Create player at the center of the screen
-player = Player(WIDTH, HEIGHT, walls)
+player = Player(WIDTH, HEIGHT, walls, targetFps, joystick, mouse_pos)
 
 # Create HUD
 hud = hud.HUD(WIDTH, HEIGHT)
@@ -128,12 +137,29 @@ while running:
         screen.blit(player.image, camera.apply(player))
         player.draw(screen)
         hud.draw(screen, player)
+
+        if player.isDead:
+            setScene("playerDead")
+
     elif scene == "menu":
         screen.fill((10, 11, 45))
 
         play_button.draw(screen)
         options_button.draw(screen)
         quit_button.draw(screen)
+    elif scene == "playerDead":
+        screen.fill((10, 11, 45))
+        font01 = pygame.font.Font(assets.assets["audiowide"], 28)
+        textSurface = font01.render(f"You're dead", True, (255, 255, 255))
+        textRect = textSurface.get_rect()
+        textRect.center = (WIDTH/2, HEIGHT/2-16)
+        menu_button.draw(screen)
+        screen.blit(textSurface, textRect)
+        textSurface = font01.render(f"You survived {player.getLive()[0]} seconds", True, (255, 255, 255))
+        textRect = textSurface.get_rect()
+        textRect.center = (WIDTH/2, HEIGHT/2+16)
+        menu_button.draw(screen)
+        screen.blit(textSurface, textRect)
 
     else:
         screen.fill((0, 0, 0))
@@ -150,6 +176,6 @@ while running:
             running = False
 
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(targetFps)
 
 pygame.quit()
