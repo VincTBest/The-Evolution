@@ -79,7 +79,6 @@ class Player:
         else:
             self.canUpgrade = False
 
-
     def draw(self, screen, camera):
         """Draws the rotated player at the correct camera position."""
         transformed_rect = camera.apply(self)  # Get camera-adjusted position

@@ -20,8 +20,14 @@ scene = "menu"
 pygame.init()
 pygame.font.init()
 
+screenSizeTest = False
+
 # Screen settings (convert to integers)
-WIDTH, HEIGHT = int(1920 / 5 * 4), int(1080 / 5 * 4)
+if screenSizeTest:
+    WIDTH = random.randint(min(int(1920 / 5 * 4), int(1024 / 5 * 4)), max(int(1920 / 5 * 4), int(1024 / 5 * 4)))
+    HEIGHT = random.randint(min(int(1080 / 5 * 4), int(768 / 5 * 4)), max(int(1080 / 5 * 4), int(768 / 5 * 4)))
+else:
+    WIDTH, HEIGHT = int(1920 / 5 * 4), int(1080 / 5 * 4)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("The Evolution")
 
@@ -110,6 +116,7 @@ while running:
 
         # Draw player (apply camera transformation)
         screen.blit(player.image, camera.apply(player))
+        hud.draw(screen)
     elif scene == "menu":
         screen.fill((10, 11, 45))
 

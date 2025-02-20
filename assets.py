@@ -37,7 +37,8 @@ def loadAssets():
         "btn_n": j(basePath, "ui", "button.png"),
         "btn_h": j(basePath, "ui", "button_hover.png"),
         "btn_a": j(basePath, "ui", "button_active.png"),
-        "audiowide": j(basePath, "font", "audiowide", "Audiowide-Regular.ttf")
+        "audiowide": j(basePath, "font", "audiowide", "Audiowide-Regular.ttf"),
+        "hud_topleft": j(basePath, "ui", "hud_topleft.png")
     }
 
 
