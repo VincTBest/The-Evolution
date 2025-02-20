@@ -1,8 +1,17 @@
-import pygame
-import assets
-import random
-from player import Player
-from camera import Camera
+import req
+try:
+    import pygame
+    import button
+    import assets
+    import random
+    from player import Player
+    from camera import Camera
+except ImportError as e:
+    print(e)
+    print("Installing third-party packages")
+    req.install_packages()
+    quit()
+
 
 scene = "menu"
 
@@ -51,9 +60,9 @@ spawnFood()
 clock = pygame.time.Clock()
 running = True
 
-play_button =
-options_button =
-quit_button =
+play_button = button.Button(10, 10)
+options_button = button.Button(10, 10)
+quit_button = button.Button(10, 10)
 buttons = [play_button, options_button, quit_button]
 
 while running:
