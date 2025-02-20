@@ -5,7 +5,16 @@ import creatures
 
 class Player:
     def __init__(self, screen_width, screen_height, walls):
+
+        self.temp1 = False
+
+        self.drawFrame = 0
+
+        self.name = "singleCell"
+
         # Dynamically set player's position to be the center of the window
+        self.screen_width = screen_width
+        self.screen_height = screen_height
         self.x = screen_width // 2
         self.y = screen_height // 2
         self.speed = 3
@@ -13,7 +22,7 @@ class Player:
         self.walls = walls  # List of wall objects
 
         # Load and store the original player image
-        self.original_image = assets.loadImage(assets.assets["SingleCellOrganism"])
+        self.original_image = assets.loadImage(assets.assets[creatures.getCreatures()[self.name]["imageName"]])
         self.image = self.original_image  # Image used for drawing
 
         # Create a rect and center it
@@ -22,12 +31,18 @@ class Player:
 
         # properties
 
-        self.food = 5
-        self.upgradeStageNeed = creatures.getCreatures()["singleCell"]["foodToUpgrade"]
+        self.food = 14
+        self.upgradeStageNeed = creatures.getCreatures()[self.name]["foodToUpgrade"]
+        self.upgradeEvolNeed = creatures.getCreatures()[self.name]["stageToEvolve"]
         self.stage = 1
+        self.stEvolution = 1
         self.evolution = 1
-        self.creature = creatures.getCreatures()["singleCell"]["id"]
-        self.creatureType = creatures.getCreatures()["singleCell"]["type"]
+        self.creature = creatures.getCreatures()[self.name]["id"]
+        self.creatureType = creatures.getCreatures()[self.name]["type"]
+
+        # gui
+        self.textcolor = (214, 214, 235)
+        self.font = pygame.font.Font(assets.assets["audiowide"], 26)
 
     def check_collision(self, next_x, next_y):
         """Returns True if the next position collides with a wall."""
@@ -79,10 +94,28 @@ class Player:
         else:
             self.canUpgrade = False
 
-    def draw(self, screen, camera):
-        """Draws the rotated player at the correct camera position."""
-        transformed_rect = camera.apply(self)  # Get camera-adjusted position
-        screen.blit(self.image, transformed_rect.topleft)
+        if self.stage >= self.upgradeEvolNeed:
+            self.stage -= self.upgradeEvolNeed
+            self.evolution += 1
+
+    def draw(self, screen):
+        self.drawFrame += 1
+
+        if self.evolution != self.stEvolution:  # DO NOT TOUCH
+            if self.drawFrame <= 180:
+                textSurface = self.font.render("You Evolved!", True, self.textcolor)
+                textRect = textSurface.get_rect()
+                textRect.center = (self.screen_width / 2, 40)
+                screen.blit(textSurface, textRect.topleft)
+                self.temp1 = True
+            else:
+                oldDraw = self.drawFrame
+                self.drawFrame = 0
+                if self.temp1:
+                    self.stEvolution = self.evolution
+                    self.drawFrame = oldDraw
+        else:
+            self.temp1 = False
 
     def addFood(self, amount):
         self.food += amount
@@ -102,3 +135,18 @@ class Player:
             return self.canUpgrade
         else:
             return None
+
+    def setName(self, name):
+        self.name = name
+
+    def changeData(self):
+        self.creature = creatures.getCreatures()[self.name]["id"]
+        self.upgradeStageNeed = creatures.getCreatures()[self.name]["foodToUpgrade"]
+        self.upgradeEvolNeed = creatures.getCreatures()[self.name]["stageToEvolve"]
+        self.creatureType = creatures.getCreatures()[self.name]["type"]
+        self.original_image = assets.loadImage(assets.assets[creatures.getCreatures()[self.name]["imageName"]])
+        self.image = self.original_image  # Image used for drawing
+
+    def upgrade(self):
+        self.food -= self.upgradeStageNeed
+        self.stage += 1

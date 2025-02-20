@@ -5,6 +5,7 @@ try:
     import assets
     import random
     import hud
+    import debug
     from player import Player
     from camera import Camera
 except ImportError as e:
@@ -40,7 +41,14 @@ walls = []
 player = Player(WIDTH, HEIGHT, walls)
 
 # Create HUD
-hud = hud.HUD()
+hud = hud.HUD(WIDTH, HEIGHT)
+
+# Create Keys
+keys = pygame.key.get_pressed()
+
+# Create Debug
+debug = debug.Debugger()
+debug.update(player, keys)
 
 # Load an image for the food item
 food_image = assets.loadImage(assets.assets["Food"])
@@ -91,6 +99,8 @@ quit_button = button.Button(WIDTH/2, HEIGHT/2+80, btn_n_l, btn_h_l, btn_a_l, lam
 menu_button = button.Button(WIDTH/2, 40, btn_n_l, btn_h_l, btn_a_l, lambda: setScene("menu"), "Main Menu", assets.assets["audiowide"], 26, (214, 214, 235))
 
 while running:
+    keys = pygame.key.get_pressed()
+    debug.update(player, keys)
     if scene == "playArea":
 
         hud.update(player.get("food"), player.get("stage"), player.get("evolution"), player.get("creature"), player.get("creatureType"), player.get("canUpgrade"))
@@ -110,13 +120,14 @@ while running:
             screen.blit(food_image, transformed_food_rect)
 
         # Update player
-        keys = pygame.key.get_pressed()
+
         mouse_pos = pygame.mouse.get_pos()
         player.update(keys, mouse_pos)
 
         # Draw player (apply camera transformation)
         screen.blit(player.image, camera.apply(player))
-        hud.draw(screen)
+        player.draw(screen)
+        hud.draw(screen, player)
     elif scene == "menu":
         screen.fill((10, 11, 45))
 
