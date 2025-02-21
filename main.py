@@ -7,6 +7,7 @@ try:
     import hud
     import debug
     import controller
+    import ds
     from player import Player
     from camera import Camera
 except ImportError as e:
@@ -209,6 +210,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            ds.cl_ds()
 
     pygame.display.flip()
     clock.tick(targetFps)

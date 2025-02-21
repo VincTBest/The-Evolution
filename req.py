@@ -3,7 +3,7 @@ import sys
 import subprocess
 
 # List of required modules
-REQUIRED_MODULES = ["pygame"]
+REQUIRED_MODULES = ["pygame", "pydualsense"]
 
 def install_packages():
     """Checks and installs missing packages."""

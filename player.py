@@ -3,6 +3,7 @@ import math
 import assets
 import creatures
 
+
 class Player:
     def __init__(self, screen_width, screen_height, walls, targetFps, joystick, mouse_pos):
 
@@ -81,7 +82,19 @@ class Player:
 
         self.frame += 1
 
-        if self.frame >= self.targetFps*8:
+
+
+        cps = 8
+        sprint = 1
+        if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+            sprint = 1.33
+            cps = 2
+
+        if self.controller and joystick.get_axis(5)>-0.45:
+            sprint = 1.33
+            cps = 2
+
+        if self.frame >= self.targetFps*cps:
             self.frame = 0
             self.food -= 1
 
@@ -91,10 +104,6 @@ class Player:
             self.food = 5
             self.setName("singleCell")
             self.changeData()
-
-        sprint = 1
-        if pygame.key.get_mods() & pygame.KMOD_SHIFT:
-            sprint = 1.33
 
         next_x, next_y = self.x, self.y
 
